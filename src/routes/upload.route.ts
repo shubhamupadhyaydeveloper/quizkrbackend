@@ -15,11 +15,11 @@ const userRoutes = async (fastify:FastifyInstance) => {
         const createBuffer = await data?.toBuffer()
 
         
-        const parsedData = await pdfParse(createBuffer)
+        const parsedData = await pdfParse(createBuffer!)
 
         console.log('this is parsed data',parsedData)
         const correctFormat = {
-            numPages : parsedData?.numPages,
+            numPages : parsedData?.numpages,
             title : parsedData?.info.Title,
             author : parsedData?.info.Author,
             text : parsedData?.text 
