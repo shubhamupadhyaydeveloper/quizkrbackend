@@ -1,10 +1,9 @@
 
 import fastify from "fastify";
 import 'dotenv/config'
-import { winstonLogger } from "./src/utils/logger";
-import userRoutes from "./src/routes/upload.route";
+import { winstonLogger } from "./utils/logger";
+import userRoutes from "./routes/upload.route";
 import fastifyMultipart from "@fastify/multipart";
-// import { connectToDatabase } from "@src/utils/connect";
 
 const app = fastify()
 const logger = winstonLogger('Initialize the app', 'info')

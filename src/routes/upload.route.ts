@@ -1,4 +1,5 @@
 import {FastifyInstance} from 'fastify'
+import { MultipartFile } from '@fastify/multipart';
 import pdfParse from 'pdf-parse'
 
 type postRoute = {
@@ -11,9 +12,8 @@ type postRoute = {
 const userRoutes = async (fastify:FastifyInstance) => {
    fastify.post('/upload',async (request,reply) => {
         console.log('data received')
-        const data = await request.file()
+        const data : MultipartFile | undefined = await request.file()
         const createBuffer = await data?.toBuffer()
-
         
         const parsedData = await pdfParse(createBuffer!)
 
