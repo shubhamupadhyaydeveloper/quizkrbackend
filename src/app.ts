@@ -19,6 +19,10 @@ const startApp = async () => {
       response.send("hello welcome to fastify app")
    })
 
+   app.get('/api',(req,res) => {
+       res.send("hi this is api")
+   })
+
    app.listen({ port: 3002,host :'0.0.0.0' }, () => {
       logger.info("🚀 app is listening on port 3002")
    })
