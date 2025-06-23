@@ -30,7 +30,7 @@ app.get('/api', async (req, reply) => {
 // Start Fastify server and get the underlying HTTP server
 const start = async () => {
    try {
-      const address = await app.listen({ port: 3002 , host: '0.0.0.0' })
+      const address = await app.listen({ port: 3002 ,  })
    } catch (err) {
       app.log.error(err)
       process.exit(1)
