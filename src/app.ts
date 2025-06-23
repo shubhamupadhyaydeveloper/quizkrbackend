@@ -14,7 +14,7 @@ const logger = winstonLogger('Initialize the app', 'info')
 // Register your plugins and routes
 app.register(fastifySensible)
 app.register(fastifyMultipart)
-app.register(fastifyJwt, { secret: process.env.JWT_TOKEN as string })
+// app.register(fastifyJwt, { secret: process.env.JWT_TOKEN as string })
 app.register(socketIoPlugin)
 app.register(userRoutes, { prefix: '/user' })
 app.register(cors, { origin: "*" })
