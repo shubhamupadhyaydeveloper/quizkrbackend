@@ -1,12 +1,20 @@
 import { FastifyInstance } from 'fastify';
 import { MultipartFile } from '@fastify/multipart';
 import pdfParse from 'pdf-parse';
+import { request } from 'http';
+import { recognize } from 'tesseract.js'
 
 type postRoute = {
   Body: {
     name: string;
     email: string;
   };
+};
+
+const config = {
+  lang: 'eng',  // Language of OCR
+  oem: 1,       // OCR Engine mode
+  psm: 3        // Page segmentation mode
 };
 
 const userRoutes = async (fastify: FastifyInstance) => {
@@ -23,22 +31,33 @@ const userRoutes = async (fastify: FastifyInstance) => {
       text: parsedData?.text,
     };
 
-    return { data: correctFormat };
+    reply.send({ data: correctFormat })
   });
+
+  fastify.post('/ocr', async (request, reply) => {
+    try {
+      const data = await request.file();
+      if (data) {
+        const buffer = await data.toBuffer();
+
+        const { data: { text } } = await recognize(
+          buffer,
+          'eng',
+        )
+
+        reply.send({ data: text })
+      }
+    } catch (error) {
+      console.error('OCR error:', error);
+      return reply.status(500).send({ error: 'OCR processing failed' });
+    }
+  });
+
 
   fastify.get('/', (req, reply) => {
     reply.send('this is home user route');
   });
 
-  fastify.post<postRoute>('/users', async (request, reply) => {
-    const { name } = request.body;
-    return { message: `User ${name} created` };
-  });
-
-  fastify.get('/notification', (req, reply) => {
-    fastify.socket.emit('notification', { message: 'Hello, how are you developer?' });
-    reply.send({ success: true });
-  });
 
 };
 

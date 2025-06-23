@@ -12,12 +12,12 @@ const app = fastify({ logger: true })
 const logger = winstonLogger('Initialize the app', 'info')
 
 // Register your plugins and routes
+app.register(fastifySensible)
+app.register(fastifyMultipart)
+app.register(fastifyJwt, { secret: process.env.JWT_TOKEN as string })
 app.register(socketIoPlugin)
 app.register(userRoutes, { prefix: '/user' })
 app.register(cors, { origin: "*" })
-app.register(fastifySensible)
-app.register(fastifyMultipart, { limits: { fileSize: 1 * 1024 * 1024 } })
-app.register(fastifyJwt, { secret: process.env.JWT_TOKEN as string })
 
 app.get('/', async (req, reply) => {
    return { message: 'Fastify + Socket.IO is running!' };
@@ -30,7 +30,7 @@ app.get('/api', async (req, reply) => {
 // Start Fastify server and get the underlying HTTP server
 const start = async () => {
    try {
-      const address = await app.listen({ port: 3002 })
+      const address = await app.listen({ port: 3002 , host: '0.0.0.0' })
    } catch (err) {
       app.log.error(err)
       process.exit(1)
