@@ -1,31 +1,40 @@
-
 import fastify from "fastify";
 import 'dotenv/config'
 import { winstonLogger } from "./utils/logger";
 import userRoutes from "./routes/upload.route";
+import fastifySensible from "@fastify/sensible";
 import fastifyMultipart from "@fastify/multipart";
+import cors from '@fastify/cors'
+import fastifyJwt from "@fastify/jwt";
+import socketIoPlugin from "./plugins/socket";
 
-const app = fastify()
+const app = fastify({ logger: true })
 const logger = winstonLogger('Initialize the app', 'info')
 
-app.register(fastifyMultipart,{limits : {fileSize : 10 * 1024 * 1024}})
-app.register(userRoutes,{prefix : '/user'})
+// Register your plugins and routes
+app.register(socketIoPlugin)
+app.register(userRoutes, { prefix: '/user' })
+app.register(cors, { origin: "*" })
+app.register(fastifySensible)
+app.register(fastifyMultipart, { limits: { fileSize: 1 * 1024 * 1024 } })
+app.register(fastifyJwt, { secret: process.env.JWT_TOKEN as string })
 
-const startApp = async () => {
+app.get('/', async (req, reply) => {
+   return { message: 'Fastify + Socket.IO is running!' };
+});
 
-//    await connectToDatabase() 
+app.get('/api', async (req, reply) => {
+   reply.send("hi this is api")
+});
 
-   app.get("/", (request, response) => {
-      response.send("hello welcome to fastify app")
-   })
+// Start Fastify server and get the underlying HTTP server
+const start = async () => {
+   try {
+      const address = await app.listen({ port: 3002 })
+   } catch (err) {
+      app.log.error(err)
+      process.exit(1)
+   }
+}
 
-   app.get('/api',(req,res) => {
-       res.send("hi this is api")
-   })
-
-   app.listen({ port: 3002,host :'0.0.0.0' }, () => {
-      logger.info("🚀 app is listening on port 3002")
-   })
-} 
-
-startApp(); 
+start();
